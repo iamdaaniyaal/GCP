@@ -1,0 +1,12 @@
+region = "us-central1"
+gcp_project = "instance-32537"
+vpc1_name = "dev"
+vpc2_name = "prod"
+credentials= "credentials.json"
+subnet1_cidr= "10.10.0.0/24"
+subnet2_cidr= "10.10.0.0/24"
+firewall_protocol1 = "icmp"
+firewall_protocol2 = "smtp"
+firewall_ports = ["22","80", "8080"]
+vpn_gateway1 = "vpn-gateway-1"
+vpn_gateway2 = "vpn-gateway-2"
