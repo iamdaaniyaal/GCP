@@ -1,66 +1,43 @@
-variable "region" {}
-variable "gcp_project" {}
-variable "credentials" {}
-variable "vpc1_name" {}
-variable "vpc2_name" {}
-variable "subnet1_cidr" {}
-variable "subnet2_cidr" {}
-variable "subnet1_source_ranges" {}
-variable "subnet2_source_ranges" {}
-variable "firewall_protocol1" {}
-variable "firewall_protocol2" {}
-variable "firewall_ports" {
-  type = list(string)
-}
+region = "us-central1"
+gcp_project = "script-project-249010"
+vpc1_name = "dev"
+vpc2_name = "prod"
+credentials= "credentials.json"
+subnet1_cidr= "10.10.0.0/24"
+subnet2_cidr= "10.10.0.0/24"
+subnet1_source_ranges =  ["0.0.0.0/0"]
+subnet2_source_ranges =  ["0.0.0.0/0"]
+firewall_protocol1 = "icmp"
+firewall_protocol2 = "smtp"
+firewall_ports = ["22","80", "8080"]
+vpn_gateway1 = "vpn-gateway-1"
+vpn_gateway2 = "vpn-gateway-2"
+ip_address_name1 = "ip-address1"
+ip_address_name2 = "ip-address2"
+fr_esp = "fr-esp"
+fr_esp_ip_protocol = "ESP"
+fr_udp500 = "fr-udp500"
+fr_udp500_ip_protocol = "UDP"
+fr_udp500_port_range = "500"
+fr_udp4500 = "fr-udp4500"
+fr_udp4500_ip_protocol = "UDP"
+fr_udp4500_port_range = "4500"
+vpn_tunnel1 = "vpn-tunnel-1"
+vpn_tunnel2 = "vpn-tunnel-2"
+local_traffic_selector = ["0.0.0.0/0"]
+iam_role = "roles/viewer"
+iam_member =  "user:moniece1693@gmail.com"
+service_account_id = "project-service-account"
+service_account_display_name = "Project Service Account"
+storage_bucket_name = "terraform-gcp-bucket-1a"
+storage_bucket_location = "EU"
+storage_bucket_class = "MULTI_REGIONAL"
+storage_bucket_lcr_action_type = "Delete"
+storage_bucket_lcr_condition_age = "10"
+storage_bucket_versioning = "true"
+storage_bucket_acl_role =  [
+    "OWNER:user-iamdaaniyaal@gmail.com", 
+	"READER:user-authentick9@gmail.com" ]
 
-variable "vpn_gateway1" {}
-variable "vpn_gateway2" {}
-
-variable "ip_address_name1" {}
-variable "ip_address_name2" {}
-
-
-
-variable "fr_esp" {}
-variable "fr_esp_ip_protocol" {}
-
-
-variable "fr_udp500" {}
-variable "fr_udp500_ip_protocol" {}
-variable "fr_udp500_port_range" {}
-
-
-variable "fr_udp4500" {}
-variable "fr_udp4500_ip_protocol" {}
-variable "fr_udp4500_port_range" {}
-
-
-
-variable "vpn_tunnel1" {}
-variable "vpn_tunnel2" {}
-
-variable "local_traffic_selector" {}
-
-
-variable "iam_role" {}
-variable "iam_member" {}
-
-variable "service_account_id" {}
-variable "service_account_display_name" {}
-
-
-variable "storage_bucket_name" {}
-variable "storage_bucket_location" {}
-variable "storage_bucket_class" {}
-variable "storage_bucket_lcr_action_type" {}
-variable "storage_bucket_lcr_condition_age" {}
-variable "storage_bucket_versioning" {}
-variable "storage_bucket_acl_role" {
-  type = list(string)
-}
-
-
-
-variable "dialogflow_api" {}
-
+dialogflow_api = "dialogflow.googleapis.com"
 
