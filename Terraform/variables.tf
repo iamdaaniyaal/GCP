@@ -10,7 +10,7 @@ variable "subnet2_source_ranges" {}
 variable "firewall_protocol1" {}
 variable "firewall_protocol2" {}
 variable "firewall_ports" {
-	type = list(string)
+  type = list(string)
 }
 
 variable "vpn_gateway1" {}
@@ -33,7 +33,7 @@ variable "fr_udp500_port_range" {}
 variable "fr_udp4500" {}
 variable "fr_udp4500_ip_protocol" {}
 variable "fr_udp4500_port_range" {}
- 
+
 
 
 variable "vpn_tunnel1" {}
@@ -44,18 +44,23 @@ variable "local_traffic_selector" {}
 
 variable "iam_role" {}
 variable "iam_member" {}
+
+variable "service_account_id" {}
+variable "service_account_display_name" {}
+
+
 variable "storage_bucket_name" {}
 variable "storage_bucket_location" {}
 variable "storage_bucket_class" {}
 variable "storage_bucket_lcr_action_type" {}
 variable "storage_bucket_lcr_condition_age" {}
 variable "storage_bucket_versioning" {}
-variable "storage_bucket_acl_role" { 
-		type = list(string)
+variable "storage_bucket_acl_role" {
+  type = list(string)
 }
 
 
 
-variable "storage_json_api" {}
-variable "cloud_storage_api" {}
+variable "dialogflow_api" {}
+
 
