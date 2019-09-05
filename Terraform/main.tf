@@ -9,23 +9,12 @@ provider "google" {
 
 // Enabling API's 
 
-resource "google_project_service" "storage-json-api" {
+resource "google_project_service" "dialogflow-api" {
   project = "${var.gcp_project}"
-  service = "${var.storage_json_api}"
+  service = "${var.dialogflow_api}"
 
   disable_dependent_services = true
 }
-
-resource "google_project_service" "cloud-storage-api" {
-  project = "${var.gcp_project}"
-  service = "${var.cloud_storage_api}"
-
-  disable_dependent_services = true
-}
-
-
-
-
 
 
 
@@ -214,8 +203,8 @@ resource "google_project_iam_member" "project-owner" {
 
 //Service Account
 resource "google_service_account" "service-acc" {
-  account_id   = "project-service-account"
-  display_name = "Project Service Account"
+  account_id   = "${var.service_account_id}"
+  display_name = "${var.service_account_display_name}"
 }
 
 //Service Account Key
