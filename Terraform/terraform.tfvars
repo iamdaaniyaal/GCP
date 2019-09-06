@@ -4,7 +4,7 @@ vpc1_name = "dev"
 vpc2_name = "prod"
 credentials= "credentials.json"
 subnet1_cidr= "10.10.0.0/24"
-subnet2_cidr= "10.10.0.0/24"
+subnet2_cidr= "10.10.1.0/24"
 subnet1_source_ranges =  ["0.0.0.0/0"]
 subnet2_source_ranges =  ["0.0.0.0/0"]
 firewall_protocol1 = "icmp"
@@ -41,3 +41,5 @@ storage_bucket_acl_role =  [
 
 dialogflow_api = "dialogflow.googleapis.com"
 
+compute_instance_name_in_vpc_1 = "dev-instance"
+compute_instance_name_in_vpc_2 = "prod-instance"
