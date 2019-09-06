@@ -1,8 +1,8 @@
 // Configure the Google Cloud provider
 provider "google" {
- credentials = "${file("${var.credentials}")}"
- project     = "${var.gcp_project}" 
- region      = "${var.region}"
+  credentials = "${file("${var.credentials}")}"
+  project     = "${var.gcp_project}"
+  region      = "${var.region}"
 }
 
 
@@ -27,72 +27,134 @@ resource "google_project_services" "project" {
 
 // Create VPC 1
 resource "google_compute_network" "vpc1" {
- name                    = "${var.vpc1_name}-vpc"
- auto_create_subnetworks = "false"
+  name                    = "${var.vpc1_name}-vpc"
+  auto_create_subnetworks = "false"
 }
 
 // Create VPC1 Subnet
 resource "google_compute_subnetwork" "subnet1" {
- name          = "${var.vpc1_name}-subnet"
- ip_cidr_range = "${var.subnet1_cidr}"
- network       = "${var.vpc1_name}-vpc"
- depends_on    = ["google_compute_network.vpc1"]
- region      = "${var.region}"
+  name          = "${var.vpc1_name}-subnet"
+  ip_cidr_range = "${var.subnet1_cidr}"
+  network       = "${var.vpc1_name}-vpc"
+  depends_on    = ["google_compute_network.vpc1"]
+  region        = "${var.region}"
 }
 
-// VPC 1 firewall configuration
+// VPC 1 INGRESS firewall configuration
 resource "google_compute_firewall" "firewall1" {
-  name    = "${var.vpc1_name}-firewall"
-  network = "${google_compute_network.vpc1.name}"
+  name      = "${var.vpc1_name}-ingress-firewall"
+  network   = "${google_compute_network.vpc1.name}"
+  direction = "INGRESS"
 
   allow {
     protocol = "${var.firewall_protocol1}"
   }
 
-   
+
 
   allow {
     protocol = "tcp"
     ports    = "${var.firewall_ports}"
   }
 
+  //Giving source ranges as this is a INGRESS Firewall Rule
   source_ranges = "${var.subnet1_source_ranges}"
+}
+
+// VPC 1  EGRESS firewall configuration
+resource "google_compute_firewall" "firewall2" {
+  name               = "${var.vpc1_name}-egress-firewall"
+  network            = "${google_compute_network.vpc1.name}"
+  direction          = "EGRESS"
+  destination_ranges = ["0.0.0.0/0"]
+
+  allow {
+    protocol = "${var.firewall_protocol1}"
+  }
+
+
+
+  allow {
+    protocol = "tcp"
+    ports    = "${var.firewall_ports}"
+  }
+
+  //Not giving source ranges as this is a EGRESS Firewall Rule
+  //source_ranges = "${var.subnet1_source_ranges}"
 }
 
 // Create VPC 2
 resource "google_compute_network" "vpc2" {
- name                    = "${var.vpc2_name}-vpc"
- auto_create_subnetworks = "false"
+  name                    = "${var.vpc2_name}-vpc"
+  auto_create_subnetworks = "false"
 }
 
 // Create VPC 2 Subnet
 resource "google_compute_subnetwork" "subnet2" {
- name          = "${var.vpc2_name}-subnet"
- ip_cidr_range = "${var.subnet2_cidr}"
- network       = "${var.vpc2_name}-vpc"
- depends_on    = ["google_compute_network.vpc2"]
- region      = "${var.region}"
+  name          = "${var.vpc2_name}-subnet"
+  ip_cidr_range = "${var.subnet2_cidr}"
+  network       = "${var.vpc2_name}-vpc"
+  depends_on    = ["google_compute_network.vpc2"]
+  region        = "${var.region}"
 }
 
-// VPC 1 firewall configuration
-resource "google_compute_firewall" "firewall2" {
-  name    = "${var.vpc2_name}-firewall"
-  network = "${google_compute_network.vpc2.name}"
+// VPC 2 INGRESS firewall configuration
+resource "google_compute_firewall" "firewall3" {
+  name      = "${var.vpc2_name}-ingress-firewall"
+  network   = "${google_compute_network.vpc2.name}"
+  direction = "INGRESS"
 
   allow {
     protocol = "${var.firewall_protocol1}"
   }
 
-  
+
 
   allow {
     protocol = "tcp"
     ports    = "${var.firewall_ports}"
   }
 
+  //Giving source ranges as this is a INGRESS Firewall Rule
   source_ranges = "${var.subnet2_source_ranges}"
 }
 
+
+// VPC 2 EGRESS firewall configuration
+resource "google_compute_firewall" "firewall4" {
+  name               = "${var.vpc2_name}-egress-firewall"
+  network            = "${google_compute_network.vpc2.name}"
+  direction          = "EGRESS"
+  destination_ranges = ["0.0.0.0/0"]
+
+  allow {
+    protocol = "${var.firewall_protocol1}"
+  }
+
+
+
+  allow {
+    protocol = "tcp"
+    ports    = "${var.firewall_ports}"
+  }
+
+  //Not giving source ranges as this is a EGRESS Firewall Rule
+  //source_ranges = "${var.subnet2_source_ranges}"
+}
+
+
+
+
+//Reserving static IP 1
+resource "google_compute_address" "ip_address1" {
+  name = "${var.ip_address_name1}"
+}
+
+
+//Reserving static IP 2
+resource "google_compute_address" "ip_address2" {
+  name = "${var.ip_address_name2}"
+}
 
 
 //VPN Gateway 1
@@ -108,15 +170,57 @@ resource "google_compute_vpn_gateway" "gateway2" {
 }
 
 
-//Reserving static IP 1
-resource "google_compute_address" "ip_address1" {
-  name = "${var.ip_address_name1}"
+
+//Forwarding Rule VPN Gateway 1 - A
+resource "google_compute_forwarding_rule" "fr_esp" {
+  name        = "${var.fr_esp}"
+  ip_protocol = "${var.fr_esp_ip_protocol}"
+  ip_address  = "${google_compute_address.ip_address1.address}"
+  target      = "${google_compute_vpn_gateway.gateway1.self_link}"
 }
 
+//Forwarding Rule VPN Gateway 1 - B
+resource "google_compute_forwarding_rule" "fr_udp500" {
+  name        = "${var.fr_udp500}"
+  ip_protocol = "${var.fr_udp500_ip_protocol}"
+  port_range  = "${var.fr_udp500_port_range}"
+  ip_address  = "${google_compute_address.ip_address1.address}"
+  target      = "${google_compute_vpn_gateway.gateway1.self_link}"
+}
 
-//Reserving static IP 2
-resource "google_compute_address" "ip_address2" {
-  name = "${var.ip_address_name2}"
+//Forwarding Rule VPN Gateway 1 - C
+resource "google_compute_forwarding_rule" "fr_udp4500" {
+  name        = "${var.fr_udp4500}"
+  ip_protocol = "${var.fr_udp4500_ip_protocol}"
+  port_range  = "${var.fr_udp4500_port_range}"
+  ip_address  = "${google_compute_address.ip_address1.address}"
+  target      = "${google_compute_vpn_gateway.gateway1.self_link}"
+}
+
+//Forwarding Rule VPN Gateway 2 -A
+resource "google_compute_forwarding_rule" "fr_esp-1" {
+  name        = "${var.fr_esp}-1"
+  ip_protocol = "${var.fr_esp_ip_protocol}"
+  ip_address  = "${google_compute_address.ip_address2.address}"
+  target      = "${google_compute_vpn_gateway.gateway2.self_link}"
+}
+
+//Forwarding Rule VPN Gateway 2 - B
+resource "google_compute_forwarding_rule" "fr_udp500-1" {
+  name        = "${var.fr_udp500}-1"
+  ip_protocol = "${var.fr_udp500_ip_protocol}"
+  port_range  = "${var.fr_udp500_port_range}"
+  ip_address  = "${google_compute_address.ip_address2.address}"
+  target      = "${google_compute_vpn_gateway.gateway2.self_link}"
+}
+
+//Forwarding Rule VPN Gateway 2 - C
+resource "google_compute_forwarding_rule" "fr_udp4500-1" {
+  name        = "${var.fr_udp4500}-1"
+  ip_protocol = "${var.fr_udp4500_ip_protocol}"
+  port_range  = "${var.fr_udp4500_port_range}"
+  ip_address  = "${google_compute_address.ip_address2.address}"
+  target      = "${google_compute_vpn_gateway.gateway2.self_link}"
 }
 
 
@@ -130,41 +234,38 @@ resource "google_compute_vpn_tunnel" "tunnel1" {
 
   local_traffic_selector = "${var.local_traffic_selector}"
 
+  remote_traffic_selector = ["10.10.1.0/24"]
+
   depends_on = [
     "google_compute_address.ip_address2",
-     "google_compute_forwarding_rule.fr_esp",
+    "google_compute_forwarding_rule.fr_esp",
     "google_compute_forwarding_rule.fr_udp500",
     "google_compute_forwarding_rule.fr_udp4500",
-    
+
   ]
 }
 
 
 
-//Forwarding Rule VPN Tunnel 1 - A
-resource "google_compute_forwarding_rule" "fr_esp" {
-  name        = "${var.fr_esp}"
-  ip_protocol = "${var.fr_esp_ip_protocol}"
-  ip_address  = "${google_compute_address.ip_address1.address}"
-  target      = "${google_compute_vpn_gateway.gateway1.self_link}"
-}
+//VPN Tunnel 2
+resource "google_compute_vpn_tunnel" "tunnel2" {
+  name          = "${var.vpn_tunnel2}"
+  peer_ip       = "${google_compute_address.ip_address1.address}"
+  shared_secret = "a secret message"
 
-//Forwarding Rule VPN Tunnel 1 - B
-resource "google_compute_forwarding_rule" "fr_udp500" {
-  name        = "${var.fr_udp500}"
-  ip_protocol = "${var.fr_udp500_ip_protocol}"
-  port_range  = "${var.fr_udp500_port_range}"
-  ip_address  = "${google_compute_address.ip_address1.address}"
-  target      = "${google_compute_vpn_gateway.gateway1.self_link}"
-}
+  target_vpn_gateway = "${google_compute_vpn_gateway.gateway2.self_link}"
 
-//Forwarding Rule VPN Tunnel 1 - C
-resource "google_compute_forwarding_rule" "fr_udp4500" {
-  name        = "${var.fr_udp4500}"
-  ip_protocol = "${var.fr_udp4500_ip_protocol}"
-  port_range  = "${var.fr_udp4500_port_range}"
-  ip_address  = "${google_compute_address.ip_address1.address}"
-  target      = "${google_compute_vpn_gateway.gateway1.self_link}"
+  local_traffic_selector = "${var.local_traffic_selector}"
+
+  remote_traffic_selector = ["10.10.0.0/24"]
+
+  depends_on = [
+    "google_compute_address.ip_address2",
+    "google_compute_forwarding_rule.fr_esp-1",
+    "google_compute_forwarding_rule.fr_udp500-1",
+    "google_compute_forwarding_rule.fr_udp4500-1",
+
+  ]
 }
 
 
@@ -198,7 +299,7 @@ resource "google_project_iam_member" "project-owner" {
   project = "${var.gcp_project}"
   role    = "${var.iam_role}"
 
-  member  = "${var.iam_member}"
+  member = "${var.iam_member}"
 }
 
 //Service Account
@@ -214,26 +315,26 @@ resource "google_service_account_key" "mykey" {
 
 //Storage Bucket
 resource "google_storage_bucket" "storage_bucket" {
-  name     = "${var.storage_bucket_name}"
-  location = "${var.storage_bucket_location}"
+  name          = "${var.storage_bucket_name}"
+  location      = "${var.storage_bucket_location}"
   storage_class = "${var.storage_bucket_class}"
 
   lifecycle_rule {
 
-  action{
-      type ="${var.storage_bucket_lcr_action_type}"
-      }
+    action {
+      type = "${var.storage_bucket_lcr_action_type}"
+    }
 
 
-   condition {
-      age ="${var.storage_bucket_lcr_condition_age}"
-      }
+    condition {
+      age = "${var.storage_bucket_lcr_condition_age}"
+    }
   }
 
 
-  versioning{
-      enabled = "${var.storage_bucket_versioning}"
-      }
+  versioning {
+    enabled = "${var.storage_bucket_versioning}"
+  }
 
 
 }
@@ -241,11 +342,67 @@ resource "google_storage_bucket" "storage_bucket" {
 
 //Storage Bucket ACL
 resource "google_storage_bucket_acl" "storage_bucket" {
-  bucket = "${google_storage_bucket.storage_bucket.name}"
+  bucket      = "${google_storage_bucket.storage_bucket.name}"
   role_entity = "${var.storage_bucket_acl_role}"
 
- 
+
 }
 
+//Compute instance in VPC 1
+resource "google_compute_instance" "compute-1" {
+  name         = "${var.compute_instance_name_in_vpc_1}"
+  machine_type = "n1-standard-1"
+  zone         = "us-central1-a"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-9"
+    }
+  }
+
+  // Local SSD disk
+  scratch_disk {
+  }
+
+  network_interface {
+    network    = "${google_compute_network.vpc1.self_link}"
+    subnetwork = "${google_compute_subnetwork.subnet1.self_link}"
+
+    access_config {
+      // Ephemeral IP
+    }
+  }
+
+
+}
+
+
+
+//Compute instance in VPC 2
+resource "google_compute_instance" "compute-2" {
+  name         = "${var.compute_instance_name_in_vpc_2}"
+  machine_type = "n1-standard-1"
+  zone         = "us-central1-a"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-9"
+    }
+  }
+
+  // Local SSD disk
+  scratch_disk {
+  }
+
+  network_interface {
+    network    = "${google_compute_network.vpc2.self_link}"
+    subnetwork = "${google_compute_subnetwork.subnet2.self_link}"
+
+    access_config {
+      // Ephemeral IP
+    }
+  }
+
+}
 
 
