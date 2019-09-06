@@ -63,4 +63,6 @@ variable "storage_bucket_acl_role" {
 
 variable "dialogflow_api" {}
 
+variable "compute_instance_name_in_vpc_1" {}
+variable "compute_instance_name_in_vpc_2" {}
 
