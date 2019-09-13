@@ -11,3 +11,4 @@ sudo rsync -av wordpress/* /var/www/html/
 sudo chown -R www-data:www-data /var/www/html/
 sudo chmod -R 755 /var/www/html/
 sudo cp /wp-config.php /var/www/html/wp-config.php
+sudo systemctl restart apache2
