@@ -1,0 +1,123 @@
+variable "subnet1_name" {}
+variable "subnet2_name" {}
+variable "firewall1_name" {}
+variable "firewall2_name" {}
+subnet1_name = "dev-subnet"
+subnet2_name = "prod-subnet"
+
+
+
+
+
+// Create VPC 2
+resource "google_compute_network" "vpc2" {
+ name                    = "${var.vpc2_name}-vpc"
+ auto_create_subnetworks = "false"
+}
+
+// Create VPC 2 Subnet
+resource "google_compute_subnetwork" "subnet2" {
+ name          = "${var.vpc2_name}-subnet"
+ ip_cidr_range = "${var.subnet2_cidr}"
+ network       = "${var.vpc2_name}-vpc"
+ depends_on    = ["google_compute_network.vpc2"]
+ region      = "${var.region}"
+}
+
+// VPC 1 firewall configuration
+resource "google_compute_firewall" "firewall2" {
+  name    = "${var.vpc2_name}-firewall"
+  network = "${google_compute_network.vpc2.name}"
+
+  allow {
+    protocol = "${var.firewall_protocol1}"
+  }
+
+   allow {
+    protocol = "${var.firewall_protocol2}"
+  }
+
+  allow {
+    protocol = "tcp"
+    ports    = "${var.firewall_ports}"
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+}
+
+
+
+//VPN Gateway 1
+resource "google_compute_vpn_gateway" "gateway1" {
+  name    = "${var.vpn_gateway1}"
+  network = "${google_compute_network.vpc1.self_link}"
+}
+
+//VPN Gateway 2
+resource "google_compute_vpn_gateway" "gateway2" {
+  name    = "${var.vpn_gateway2}"
+  network = "${google_compute_network.vpc2.self_link}"
+}
+
+resource "google_compute_global_address" "default" {
+  name = "global-appserver-ip"
+}
+
+
+
+
+resource "google_compute_address" "ip_address" {
+  name = "my-address"
+}
+
+
+
+//Forwarding Rule VPN Tunnel 2 - B
+resource "google_compute_forwarding_rule" "fr_udp500-1" {
+  name        = "fr-udp500-1"
+  ip_protocol = "UDP"
+  port_range  = "500"
+  ip_address  = "${google_compute_address.ip_address2.address}"
+  target      = "${google_compute_vpn_gateway.gateway2.self_link}"
+}
+
+//Forwarding Rule VPN Tunnel 2 - C
+resource "google_compute_forwarding_rule" "fr_udp4500-1" {
+  name        = "fr-udp4500-1"
+  ip_protocol = "UDP"
+  port_range  = "4500"
+  ip_address  = "${google_compute_address.ip_address2.address}"
+  target      = "${google_compute_vpn_gateway.gateway2.self_link}"
+
+
+
+
+
+
+  resource "google_project_iam_policy" "project-owner" {
+  project     = "${var.gcp_project}"
+  policy_data = "${data.google_iam_policy.admin.policy_data}"
+}
+
+data "google_iam_policy" "admin" {
+  binding {
+    role = "${var.iam_role}"
+
+    members = ["{$var.iam_members}"]
+  }
+}
+*/
+
+
+
+
+data "google_service_account_key" "mykey" {
+  name = "${google_service_account_key.mykey.name}"
+  public_key_type = "TYPE_X509_PEM_FILE"
+}
+
+
+["${var.storage_bucket_acl_role}"]
+
+
+Added VPC, Static IP, Forwarding Rules, VPN-Gateway & Tunnel, Storage Bucket-LCR & ACL, IAM, Service Account, Enabling API

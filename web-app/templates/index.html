@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Python Flask Bucket List App</title>
+
+    <!-- <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <!-- <link href="../static/bootstrap.min.css" rel="stylesheet"> -->
+
+    <!-- <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet"> -->
+    <link href="/static/signup.css" rel="stylesheet">
+    <!-- <script src="../static/js/jquery-3.1.1.js"></script>
+    <script src="../static/js/signUp.js"></script> -->
+
+  </head>
+
+  <body>
+
+    <!-- <div class="container"> -->
+      <!-- <div class="header">
+        <nav>
+          <ul class="nav nav-pills pull-right">
+            <li role="presentation" ><a href="/">Home</a> &nbsp;</li>
+            <li role="presentation" class="active"><a href="#">Sign In</a>&nbsp;</li>
+            <li role="presentation" ><a href="/showSignUp">Sign Up</a>&nbsp;</li>
+          </ul>
+        </nav>
+      </div> -->
+
+      <!-- <div class="jumbotron"> -->
+        <h1>Terrafrom Input</h1>
+        <form class="form-signin" action="/compute" method="post">
+        <label for="inputEmail" class="sr-only">Region<label>
+        <input type="text" name="inputRegion" id="inputRegion" class="form-control" placeholder="Region" required autofocus>
+        <label for="inputPassword" class="sr-only">Project</label>
+        <input type="text" name="inputProject" id="inputPassword" class="form-control" placeholder="Project" required>
+        <label for="inputPassword" class="sr-only">VPC-Name</label>
+        <input type="text" name="inputVPC" id="inputVPC" class="form-control" placeholder="VPC-Name" required>
+
+        <button id="btnSignIn" class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+      </form>
+      <!-- </div> -->
+<!--
+      <footer class="footer">
+        <p>©Copyright2017</p>
+      </footer> -->
+
+    <!-- </div> -->
+  </body>
+</html>
