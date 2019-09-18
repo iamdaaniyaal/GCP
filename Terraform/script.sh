@@ -12,3 +12,6 @@ sudo chown -R www-data:www-data /var/www/html/
 sudo chmod -R 755 /var/www/html/
 sudo cp /wp-config.php /var/www/html/wp-config.php
 sudo systemctl restart apache2
+curl https://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add -
+echo "deb https://packages.elastic.co/beats/apt stable main" |  sudo tee -a /etc/apt/sources.list.d/beats.list
+sudo apt-get update && sudo apt-get install filebeat
