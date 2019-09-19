@@ -12,6 +12,10 @@ sudo chown -R www-data:www-data /var/www/html/
 sudo chmod -R 755 /var/www/html/
 sudo cp /wp-config.php /var/www/html/wp-config.php
 sudo systemctl restart apache2
-curl https://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add -
-echo "deb https://packages.elastic.co/beats/apt stable main" |  sudo tee -a /etc/apt/sources.list.d/beats.list
-sudo apt-get update && sudo apt-get install filebeat
+sudo curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.5.3-amd64.deb
+sudo dpkg -i filebeat-5.5.3-amd64.deb
+sudo cd /
+sudo cd /etc/filebeat/
+sudo rm -rf filebeat.yml
+sudo cd /
+sudo cp /filebeat.yml /etc/filebeat/filebeat.yml
