@@ -19,3 +19,5 @@ sudo cd /etc/filebeat/
 sudo rm -rf filebeat.yml
 sudo cd /
 sudo cp /filebeat.yml /etc/filebeat/filebeat.yml
+sudo /etc/init.d/filebeat start
+sudo service filebeat start
